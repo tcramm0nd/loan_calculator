@@ -14,7 +14,7 @@ class Loan:
         self.apr = self.apr_percent / 100
         self.mpr = self.apr / 12
         self.months = months
-        if term_unit == 'Month':
+        if months:
             self.initial_term = term
         else:
             self.initial_term = term * 12
@@ -32,8 +32,8 @@ class Loan:
               {term_unit}s at {apr} is {self.monthly_payment}'''
 
     def update_payment(self):
-        self.current_interest_payment = round((self.principal * self.mpr), 2)
-        self.current_principal_payment = round((self.monthly_payment - self.current_interest_payment), 2)
+        self.current_interest_payment = self.principal * self.mpr
+        self.current_principal_payment = self.monthly_payment - self.current_interest_payment
 
     def make_payment(self, regular=True, payment=0):
         if regular:
@@ -56,6 +56,21 @@ class Loan:
                              self.current_interest_payment,
                              self.total_interest_paid])
         return payments
+
+    def time_remaining(self, principal = 0.0):
+        '''Returns the time remaining for a loan given a principal balance
+        '''
+        if principal != 0.0:
+            self.principal = principal
+        while self.principal > 0:
+            self.make_payment()
+
+        time_to_payoff = self.initial_term - self.term_remaining
+
+        days_remaining = int(30.4 * time_to_payoff)
+        payoff_date = dt.date.today() + dt.timedelta(days=days_remaining)
+        print(payoff_date)
+        return time_to_payoff
 
 
 
